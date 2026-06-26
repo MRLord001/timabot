@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хз, мб троян, by snisago. Прокатное производство</title>
+    <style>
+        :root {
+            /* Строгая, глубокая палитра */
+            --bg-main: #090d16;
+            --bg-card: #131926;
+            --bg-sidebar: #0d121f;
+            --border: #1e2638;
+            --border-focus: #3b4866;
+            
+            /* Акцент — благородный цвет раскаленной стали */
+            --steel-hot: #f95738;
+            --steel-glow: rgba(249, 87, 56, 0.15);
+            
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --text-card: #cbd5e1;
+            
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.15);
+            
+            --header-height: 60px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            overflow-x: hidden;
+            display: flex;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- БОКОВАЯ ПАНЕЛЬ (Инженерный стиль) --- */
+        aside {
+            width: 290px;
+            height: 100vh;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            padding: 30px 20px;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        aside h1 {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        aside h1::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: var(--steel-hot);
+            border-radius: 50%;
+        }
+
+        .nav-group {
+            margin-bottom: 25px;
+        }
+
+        .nav-group-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding-left: 10px;
+        }
+
+        aside ul {
+            list-style: none;
+        }
+
+        aside ul li {
+            margin-bottom: 2px;
+        }
+
+        aside ul li a {
+            display: block;
+            color: var(--text-card);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: all 0.15s ease;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        aside ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: #fff;
+        }
+
+        aside ul li a.active {
+            background-color: var(--steel-glow);
+            color: var(--steel-hot);
+            border-color: rgba(249, 87, 56, 0.3);
+            font-weight: 500;
+        }
+
+        /* --- ГЛАВНЫЙ КОНТЕНТ --- */
+        main {
+            margin-left: 290px;
+            padding: 50px 60px;
+            max-width: 1100px;
+            width: calc(100% - 290px);
+        }
+
+        .block-section {
+            margin-bottom: 70px;
+        }
+
+        .block-title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .block-title::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background-color: var(--border);
+        }
+
+        /* КАРТОЧКИ ТЕМ */
+        .topic-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.3);
+            scroll-margin-top: 40px; 
+        }
+
+        .topic-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        .topic-card h4 {
+            font-size: 1rem;
+            color: #fff;
+            margin: 24px 0 12px 0;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 18px;
+            color: var(--text-card);
+            font-size: 0.95rem;
+            line-height: 1.65;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 18px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: var(--text-card);
+            font-size: 0.95rem;
+        }
+
+        strong {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* --- ИНФО-ПЛАШКИ --- */
+        .info-note {
+            background-color: rgba(30, 38, 56, 0.3);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--steel-hot);
+            border-radius: 0 8px 8px 0;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .info-note h4 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        /* --- СХЕМЫ ТЕХПРОЦЕССОВ (Конвейерный вид) --- */
+        .scheme-container {
+            margin: 25px 0;
+        }
+
+        .pipeline {
+            display: flex;
+            background-color: rgba(9, 13, 22, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            overflow-x: auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .pipe-node {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .pipeline.modern .pipe-node.highlight {
+            border-color: rgba(16, 185, 129, 0.4);
+            color: var(--success);
+            background-color: var(--success-glow);
+        }
+
+        .pipe-arrow {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            user-select: none;
+        }
+
+        /* --- ТАБЛИЦЫ --- */
+        .table-container {
+            overflow-x: auto;
+            margin: 25px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background-color: rgba(13, 18, 31, 0.5);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            background-color: rgba(9, 13, 22, 0.4);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.01);
+        }
+
+        /* --- МЕДИА-ЗАПРОСЫ (АДАПТИВ) --- */
+        header { display: none; }
+
+        @media (max-width: 992px) {
+            aside {
+                transform: translateX(-100%);
+                width: 280px;
+                top: var(--header-height);
+                height: calc(100vh - var(--header-height));
+                box-shadow: 10px 0 15px rgba(0,0,0,0.3);
+                padding: 20px;
+            }
+
+            header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: fixed;
+                top: 0; left: 0; width: 100%;
+                height: var(--header-height);
+                background-color: var(--bg-sidebar);
+                border-bottom: 1px solid var(--border);
+                padding: 0 20px;
+                z-index: 200;
+            }
+
+            header h1 {
+                font-size: 0.9rem;
+                color: var(--text-main);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .menu-toggle {
+                background: none;
+                border: none;
+                color: var(--text-main);
+                font-size: 1.3rem;
+                cursor: pointer;
+            }
+
+            body.menu-open aside {
+                transform: translateX(0);
+            }
+
+            main {
+                margin-left: 0;
+                width: 100%;
+                padding: 24px 16px;
+                padding-top: calc(var(--header-height) + 20px);
+            }
+
+            .topic-card {
+                padding: 25px 20px;
+            }
+
+            .block-title {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Мобильный Хедер -->
+    <header>
+        <h1>Прокатка: Учебник</h1>
+        <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">&#9776;</button>
+    </header>
+
+    <!-- Боковое меню -->
+    <aside id="sidebar">
+        <h1>Справочник</h1>
+        
+        <div class="nav-group">
+            <div class="nav-group-title">1. Оборудование и схемы</div>
+            <ul>
+                <li><a href="#t1" class="nav-link active">Что такое стан</a></li>
+                <li><a href="#t2" class="nav-link">Классификация по назначению</a></li>
+                <li><a href="#t3" class="nav-link">По валкам и клетям</a></li>
+                <li><a href="#t4" class="nav-link">Схемы производства</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-group-title">2. Материалы и дефекты</div>
+            <ul>
+                <li><a href="#t5" class="nav-link">Виды заготовок</a></li>
+                <li><a href="#t6" class="nav-link">Сортамент и профили</a></li>
+                <li><a href="#t7" class="nav-link">Дефекты слитков</a></li>
+                <li><a href="#t8" class="nav-link">Подготовка к прокатке</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-group-title">3. Нагрев металла</div>
+            <ul>
+                <li><a href="#t9" class="nav-link">Режимы нагрева</a></li>
+                <li><a href="#t10" class="nav-link">Нагревательные колодцы</a></li>
+                <li><a href="#t11" class="nav-link">Методические печи</a></li>
+                <li><a href="#t12" class="nav-link">Дефекты нагрева</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-group-title">4. Технология и отделка</div>
+            <ul>
+                <li><a href="#t13" class="nav-link">Виды прокатки</a></li>
+                <li><a href="#t14" class="nav-link">Охлаждение</a></li>
+                <li><a href="#t15" class="nav-link">Отделочные операции</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-group-title">5. Теория калибровки</div>
+            <ul>
+                <li><a href="#t16" class="nav-link">Сущность калибровки</a></li>
+                <li><a href="#t17" class="nav-link">Элементы калибра</a></li>
+                <li><a href="#t18" class="nav-link">Классификация калибров</a></li>
+                <li><a href="#t19" class="nav-link">Линии и диаметры</a></li>
+                <li><a href="#t20" class="nav-link">Давление валков</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-group-title">6. Системы калибров</div>
+            <ul>
+                <li><a href="#t21" class="nav-link">Сравнительная таблица</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-group-title">7. Эксплуатация</div>
+            <ul>
+                <li><a href="#t25" class="nav-link">Материалы валков</a></li>
+                <li><a href="#t26" class="nav-link">Изготовление</a></li>
+                <li><a href="#t27" class="nav-link">Стойкость валков</a></li>
+                <li><a href="#t28" class="nav-link">Валковая арматура</a></li>
+                <li><a href="#t29" class="nav-link">Перевалка и настройка</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-group-title">8. Контроль</div>
+            <ul>
+                <li><a href="#t30" class="nav-link">Дефектоскопия</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Основной контент -->
+    <main>
+
+        <!-- БЛОК 1 -->
+        <section class="block-section">
+            <div class="block-title">Блок 1. Оборудование и схемы</div>
+            
+            <div class="topic-card" id="t1">
+                <h3>1. Что такое прокатный стан</h3>
+                <p><strong>Прокатный стан</strong> — это не просто одна машина, а целый комплекс машин и агрегатов. Он выполняет как саму деформацию металла между валками, так и вспомогательные операции.</p>
+                
+                <div class="info-note">
+                    <h4>Классификация оборудования:</h4>
+                    <ul>
+                        <li><strong>Основное:</strong> Оборудование, непосредственно участвующее в деформации. Рабочие клети (валки, станины, нажимные механизмы), шпиндели, шестеренные клети, редукторы и главные электродвигатели.</li>
+                        <li><strong>Вспомогательное:</strong> Оборудование для обслуживания основного процесса. Рольганги и шлепперы (транспорт), ножницы и пилы (резка), правильные машины, моталки, кантователи.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="topic-card" id="t2">
+                <h3>2. Классификация станов по назначению</h3>
+                <p>Тип стана определяется видом конечной продукции, которую он выпускает:</p>
+                <ul>
+                    <li><strong>Заготовочные:</strong> Блюминги и слябинги. Перекатывают слитки в заготовки квадратного (блюмы) или прямоугольного (слябы) сечения.</li>
+                    <li><strong>Сортовые:</strong> Выпускают простые и фасонные профили. Делятся на рельсобалочные, крупно-, средне-, мелкосортные и проволочные станы.</li>
+                    <li><strong>Листовые:</strong> Производят листы и полосы. Бывают горячей прокатки (толстолистовые и широкополосные) и холодной прокатки.</li>
+                    <li><strong>Трубопрокатные:</strong> Служат для производства бесшовных труб.</li>
+                    <li><strong>Специальные:</strong> Для узкой номенклатуры (колесопрокатные, шаропрокатные).</li>
+                </ul>
+            </div>
+
+            <div class="topic-card" id="t3">
+                <h3>3. Классификация по количеству валков и расположению клетей</h3>
+                <h4>По числу валков в одной клети:</h4>
+                <ul>
+                    <li><strong>Дуо (2 валка):</strong> Простейшие клети. Бывают реверсивные (направление вращения меняется) и нереверсивные.</li>
+                    <li><strong>Трио (3 валка):</strong> Сортовые клети, вращаются в одну сторону, прокат идет в двух направлениях (между 1-2 и 2-3 валками).</li>
+                    <li><strong>Кварто (4 валка):</strong> Листовые клети. Два тонких <em>рабочих</em> валка и два толстых <em>опорных</em> (для уменьшения прогиба рабочих).</li>
+                    <li><strong>Многовалковые:</strong> 6, 12 или 20 валков. Применяются для прокатки тончайшей ленты и фольги.</li>
+                </ul>
+                
+                <h4>По расположению клетей:</h4>
+                <ul>
+                    <li><strong>Линейные:</strong> Несколько клетей стоят в один ряд, приводятся в движение одним длинным валом.</li>
+                    <li><strong>Последовательные:</strong> Клети стоят друг за другом, металл проходит каждую клеть по одному разу.</li>
+                    <li><strong>Непрерывные:</strong> Самые современные и производительные. Металл деформируется одновременно в нескольких клетях. Скорость прокатки растет от клети к клети.</li>
+                </ul>
+            </div>
+
+            <div class="topic-card" id="t4">
+                <h3>4. Общие схемы производства в современных цехах</h3>
+                
+                <h4>Классическая схема (устаревшая):</h4>
+                <div class="scheme-container">
+                    <div class="pipeline">
+                        <div class="pipe-node">Слиток</div>
+                        <div class="pipe-arrow">➔</div>
+                        <div class="pipe-node">Нагревательные колодцы</div>
+                        <div class="pipe-arrow">➔</div>
+                        <div class="pipe-node">Блюминг/Слябинг</div>
+                        <div class="pipe-arrow">➔</div>
+                        <div class="pipe-node">Зачистка</div>
+                        <div class="pipe-arrow">➔</div>
+                        <div class="pipe-node">Печь</div>
+                        <div class="pipe-arrow">➔</div>
+                        <div class="pipe-node">Готовый стан</div>
+                    </div>
+                </div>
+
+                <h4>Современная схема:</h4>
+                <div class="scheme-container">
+                    <div class="pipeline modern">
+                        <div class="pipe-node">Жидкая сталь</div>
+                        <div class="pipe-arrow">➔</div>
+                        <div class="pipe-node highlight">МНЛЗ</div>
+                        <div class="pipe-arrow">➔</div>
+                        <div class="pipe-node">Подогревательная печь</div>
+                        <div class="pipe-arrow">➔</div>
+                        <div class="pipe-node highlight">Непрерывный стан</div>
+                        <div class="pipe-arrow">➔</div>
+                        <div class="pipe-node">Прокат</div>
+                    </div>
+                </div>
+                <p><em>Современная схема исключает стадию блюминга/слябинга, экономя огромное количество энергии.</em></p>
+            </div>
+        </section>
+
+        <!-- БЛОК 2 -->
+        <section class="block-section">
+            <div class="block-title">Блок 2. Материалы и дефекты</div>
+            
+            <div class="topic-card" id="t5">
+                <h3>5. Слитки, блюмы, слябы, заготовка</h3>
+                <ul>
+                    <li><strong>Слиток:</strong> Металл, застывший в изложнице. Имеет коническую форму и неоднородную структуру.</li>
+                    <li><strong>Блюм:</strong> Крупная заготовка <em>квадратного</em> сечения (от 140х140 мм). Исходный материал для сортового проката.</li>
+                    <li><strong>Сляб:</strong> Крупная заготовка <em>прямоугольного</em> сечения (ширина до 2000 мм). Исходный материал для листов.</li>
+                    <li><strong>Сортовая заготовка:</strong> Квадрат меньшего размера (60х60 – 150х150 мм) для мелкосортных станов.</li>
+                </ul>
+            </div>
+
+            <div class="topic-card" id="t6">
+                <h3>6. Сортамент продукции и виды профилей</h3>
+                <p><strong>Сортамент</strong> — это весь перечень профилей и размеров, выпускаемых станом или заводом.</p>
+                <ul>
+                    <li><strong>Простые профили:</strong> Круг, квадрат, шестигранник, полоса.</li>
+                    <li><strong>Фасонные общего назначения:</strong> Уголок, швеллер, двутавровая балка.</li>
+                    <li><strong>Фасонные специального назначения:</strong> Рельсы, шпунты, профили для автопрома.</li>
+                </ul>
+            </div>
+
+            <div class="topic-card" id="t7">
+                <h3>7. Дефекты слитков и заготовок</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Дефект</th>
+                                <th>Причина</th>
+                                <th>Предотвращение</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Усадочная раковина</strong></td>
+                                <td>Сжатие металла при остывании.</td>
+                                <td>Прибыль с утеплителем, обрезка головы.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ликвация</strong></td>
+                                <td>Химическая неоднородность.</td>
+                                <td>Режимы заливки стали.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Трещины</strong></td>
+                                <td>Неравномерное остывание.</td>
+                                <td>Контроль охлаждения.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Плены</strong></td>
+                                <td>Заворот корочки при заливке.</td>
+                                <td>Защита аргоном, шлаки.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="topic-card" id="t8">
+                <h3>8. Исходный материал и его подготовка к прокатке</h3>
+                <p>Перед нагревом заготовки проходят контроль и обработку:</p>
+                <ol>
+                    <li><strong>Осмотр и дефектоскопия:</strong> Поиск поверхностных и внутренних дефектов (визуально, УЗК).</li>
+                    <li><strong>Зачистка поверхности:</strong> Удаление трещин и плен (огневая зачистка, вырубка или шлифовка), чтобы они не «закатались» внутрь готового проката.</li>
+                    <li><strong>Порезка:</strong> Деление на мерные длины под габариты нагревательной печи.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- БЛОК 3 -->
+        <section class="block-section">
+            <div class="block-title">Блок 3. Нагрев металла</div>
+
+            <div class="topic-card" id="t9">
+                <h3>9. Нагрев металла перед прокаткой</h3>
+                <p>Нагрев нужен для перевода стали в пластичное состояние и снижения сопротивления деформации. <strong>Температура начала прокатки: 1100–1250 °C.</strong></p>
+                <p>Режим нагрева регламентирует скорость, время выдержки (для выравнивания температуры) и конечную температуру. Слишком быстрый нагрев может вызвать трещины в легированных сталях.</p>
+            </div>
+
+            <div class="topic-card" id="t10">
+                <h3>10. Нагревательные колодцы</h3>
+                <p>Это печи периодического действия шахтного типа. Слитки загружаются сверху краном вертикально. Предназначены для подогрева крупных слитков перед блюмингом. Устаревшее оборудование, вытесняется МНЛЗ.</p>
+            </div>
+
+            <div class="topic-card" id="t11">
+                <h3>11. Характеристика методических печей</h3>
+                <p>Это печи непрерывного действия. Заготовки движутся сквозь печь навстречу горячим газам (методически). Бывают толкательные (металл толкает металл) или с шагающими балками (металл переносится шагами).</p>
+                <div class="info-note">
+                    <h4>Зоны методической печи:</h4>
+                    <ol>
+                        <li>Методическая (подогрев дымовыми газами).</li>
+                        <li>Сварочная (интенсивный нагрев горелками).</li>
+                        <li>Томительная (выравнивание температуры).</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="topic-card" id="t12">
+                <h3>12. Дефекты нагрева</h3>
+                <ul>
+                    <li><strong>Окалина (угар):</strong> Потеря металла (1–3%) из-за окисления поверхности.</li>
+                    <li><strong>Обезуглероживание:</strong> Выгорание углерода из поверхностного слоя.</li>
+                    <li><strong>Перегрев:</strong> Рост зерна из-за высокой температуры. Металл хрупкий, требуется термообработка.</li>
+                    <li><strong>Пережог:</strong> Кислород окисляет границы зерен. Металл рассыпается при прокатке. <strong>Неисправимый брак.</strong></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- БЛОК 4 -->
+        <section class="block-section">
+            <div class="block-title">Блок 4. Технология и отделка</div>
+
+            <div class="topic-card" id="t13">
+                <h3>13. Виды прокатки</h3>
+                <ul>
+                    <li><strong>Продольная:</strong> Обычная прокатка. Заготовка движется перпендикулярно осям валков, которые вращаются в разные стороны.</li>
+                    <li><strong>Поперечная:</strong> Валки вращаются в одну сторону, заготовка крутится между ними без движения вперед (для тел вращения).</li>
+                    <li><strong>Поперечно-винтовая (косая):</strong> Валки стоят под углом. Заготовка вращается и одновременно движется поступательно (прошивка гильз для труб).</li>
+                </ul>
+            </div>
+
+            <div class="topic-card" id="t14">
+                <h3>14. Охлаждение металла после прокатки</h3>
+                <ul>
+                    <li><strong>На воздухе:</strong> На холодильниках для рядовых сталей.</li>
+                    <li><strong>Замедленное:</strong> В колодцах для легированных сталей во избежание трещин (флокенов).</li>
+                    <li><strong>Ускоренное (термоупрочнение):</strong> Водой на выходе из стана (получение арматуры А500С).</li>
+                </ul>
+            </div>
+
+            <div class="topic-card" id="t15">
+                <h3>15. Виды и назначение отделочных операций</h3>
+                <ul>
+                    <li><strong>Удаление окалины:</strong> Гидросбив водой высокого давления или травление в кислоте.</li>
+                    <li><strong>Резка:</strong> На мерные длины летучими ножницами или пилами.</li>
+                    <li><strong>Правка:</strong> На роликовых машинах для устранения кривизны.</li>
+                    <li><strong>Упаковка:</strong> Смотка в рулоны или увязка в пачки.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- БЛОК 5 -->
+        <section class="block-section">
+            <div class="block-title">Блок 5. Теория калибровки</div>
+
+            <div class="topic-card" id="t16">
+                <h3>16. Сущность и назначение калибровки валков</h3>
+                <p><strong>Калибровка валков</strong> — это расчет системы вырезов (ручьев) на валках для получения готового профиля нужной формы из исходной заготовки.</p>
+                <ul>
+                    <li><strong>Ручей</strong> — вырез на одном валке.</li>
+                    <li><strong>Калибр</strong> — просвет между ручьями двух валков.</li>
+                </ul>
+            </div>
+
+            <div class="topic-card" id="t17">
+                <h3>17. Элементы и размеры калибровки валков</h3>
+                <ul>
+                    <li><strong>Высота (h) и ширина (b) калибра.</strong></li>
+                    <li><strong>Выпуск калибра (&phi;):</strong> Уклон стенок ручья, чтобы металл не заклинивало в валках.</li>
+                    <li><strong>Радиусы закруглений:</strong> Скругляют углы калибра.</li>
+                    <li><strong>Зазор валков (S):</strong> Расстояние между буртами валков.</li>
+                </ul>
+            </div>
+
+            <div class="topic-card" id="t18">
+                <h3>18. Классификация калибров</h3>
+                <ol>
+                    <li><strong>Обжимные (вытяжные):</strong> Уменьшают сечение заготовки.</li>
+                    <li><strong>Черновые:</strong> Формируют грубые очертания профиля.</li>
+                    <li><strong>Предчистовые:</strong> Создают форму, близкую к готовой.</li>
+                    <li><strong>Чистовые:</strong> Выдают окончательный профиль.</li>
+                </ol>
+            </div>
+
+            <div class="topic-card" id="t19">
+                <h3>19. Катающий диаметр, ЛП, СЛВ</h3>
+                <ul>
+                    <li><strong>ЛП (Линия прокатки):</strong> Горизонтальная плоскость посередине между осями валков.</li>
+                    <li><strong>СЛВ (Средняя линия валков):</strong> Линия между осями с учетом зазора.</li>
+                    <li><strong>НЛВ (Нейтральная линия валков):</strong> Линия, где скорости металла и валка равны.</li>
+                    <li><strong>Катающий диаметр (D_кат):</strong> Диаметр валка в месте, где скорость металла совпадает со скоростью валка.</li>
+                </ul>
+            </div>
+
+            <div class="topic-card" id="t20">
+                <h3>20. Расположение калибров и давление валков</h3>
+                <p>Для сортовой прокатки применяют <strong>верхнее давление</strong>: диаметр верхнего валка делают чуть больше нижнего (D_верх &gt; D_ниж). Металл прижимается вниз к выводной линейке, что безопаснее.</p>
+            </div>
+        </section>
+
+        <!-- БЛОК 6 -->
+        <section class="block-section">
+            <div class="block-title">Блок 6. Системы калибров</div>
+            <div class="topic-card" id="t21">
+                <h3>Системы вытяжных калибров</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Система</th>
+                                <th>Применение</th>
+                                <th>Преимущества</th>
+                                <th>Недостатки</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Прямоугольные</strong></td>
+                                <td>Первые клети.</td>
+                                <td>Прочность валков, универсальность.</td>
+                                <td>Малые вытяжки.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ромб-квадрат</strong></td>
+                                <td>Черновые клети.</td>
+                                <td>Устойчивость, высокие вытяжки.</td>
+                                <td>Глубокая врезка.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Овал-квадрат</strong></td>
+                                <td>Ключевая система сортовых станов.</td>
+                                <td>Самые высокие вытяжки, проработка структуры.</td>
+                                <td>Овал неустойчив в квадрате.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- БЛОК 7 -->
+        <section class="block-section">
+            <div class="block-title">Блок 7. Эксплуатация</div>
+
+            <div class="topic-card" id="t25">
+                <h3>25. Элементы, материалы валков</h3>
+                <p>Элементы: Бочка (рабочая часть), шейки (опоры), приводной конец.</p>
+                <h4>Материалы:</h4>
+                <ul>
+                    <li><strong>Стальные (легированные):</strong> Прочные, для обжимных клетей.</li>
+                    <li><strong>Чугунные (отбеленный чугун):</strong> Твердые, износостойкие, для чистовых клетей.</li>
+                </ul>
+            </div>
+
+            <div class="topic-card" id="t26">
+                <h3>26. Изготовление валков</h3>
+                <p>Применяется ковка (для стальных) или центробежное литье (для чугунных двухслойных валков).</p>
+            </div>
+
+            <div class="topic-card" id="t27">
+                <h3>27. Стойкость валков</h3>
+                <p>Для повышения стойкости применяют непрерывное охлаждение водой, регулярную переточку поверхности и наплавку износостойкими сплавами.</p>
+            </div>
+
+            <div class="topic-card" id="t28">
+                <h3>28. Валковая арматура</h3>
+                <p>Устройства для центрирования металла при вводе в калибр (<strong>вводная</strong>) и для «срезания» металла с валка, чтобы полоса не намоталась (<strong>выводная</strong>).</p>
+            </div>
+
+            <div class="topic-card" id="t29">
+                <h3>29. Перевалка валков и настройка стана</h3>
+                <p><strong>Перевалка</strong> — замена изношенных валков. Для ускорения применяют кассетный тип клетей. На непрерывных станах настройка автоматизирована: компьютер регулирует скорости двигателей онлайн.</p>
+            </div>
+        </section>
+
+        <!-- БЛОК 8 -->
+        <section class="block-section">
+            <div class="block-title">Блок 8. Контроль</div>
+            <div class="topic-card" id="t30">
+                <h3>30. Контроль процесса и дефектоскопия</h3>
+                <p>Параметры процесса контролируют пирометрами (температура) и толщиномерами (геометрия).</p>
+                <div class="info-note">
+                    <h4>Методы обнаружения дефектов:</h4>
+                    <ul>
+                        <li><strong>Визуальный:</strong> Инспекторами или видеокамерами.</li>
+                        <li><strong>Ультразвуковой (УЗК):</strong> Поиск внутренних пустот.</li>
+                        <li><strong>Вихретоковый:</strong> Сканирование поверхностных трещин на ходу.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // JS для работы мобильного меню
+        const menuToggle = document.getElementById('menuToggle');
+        const body = document.body;
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.topic-card');
+
+        // Открыть/закрыть меню по клику на бургер
+        menuToggle.addEventListener('click', () => {
+            body.classList.toggle('menu-open');
+        });
+
+        // Закрыть меню при клике на ссылку (на мобильном)
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                body.classList.remove('menu-open');
+                navLinks.forEach(el => el.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+
+        // Автоматическая подсветка пунктов меню при прокрутке страницы
+        window.addEventListener('scroll', () => {
+            let currentId = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.pageYOffset >= sectionTop - 120) {
+                    currentId = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').slice(1) === currentId) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
